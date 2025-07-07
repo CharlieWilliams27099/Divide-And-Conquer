@@ -1,6 +1,11 @@
+document.getElementById("start-button").addEventListener("click", () => {
+  document.getElementById("home-screen").style.display = "none";
+  document.getElementById("game-screen").style.display = "block";
+});
+
 const board = document.getElementById("game-board");
 
-// Example custom map — adapt based on your drawing
+
 const mapLayout = [
   ["~", "~", "~", "A1", "A1", "~", "~", "A3", "~", "~"],
   ["~", "~", "A2", "A1", "C", "A1", "A3", "A3", "~", "~"],
