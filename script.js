@@ -1,12 +1,9 @@
-
-// === Start Button Logic ===
 document.getElementById("start-button").addEventListener("click", () => {
   document.getElementById("home-screen").style.display = "none";
   document.getElementById("game-screen").style.display = "block";
   drawMap();
 });
 
-// === Map Setup ===
 const board = document.getElementById("game-board");
 
 const mapLayout = [
@@ -46,7 +43,7 @@ function drawMap() {
   }
 }
 
-// === Optional: End Turn Button ===
 document.getElementById("end-turn").addEventListener("click", () => {
-  alert("Turn ended — game logic coming soon!");
+  alert("Turn ended — now add game logic!");
 });
+
