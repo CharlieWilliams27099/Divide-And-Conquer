@@ -7,15 +7,14 @@ document.getElementById("start-button").addEventListener("click", () => {
 const board = document.getElementById("game-board");
 
 const mapLayout = [
-// 20 columns × 12 rows
   ["~","~","~","~","~","~","~","A","A","A","A","~","~","~","~","D","D","D","~","~"],
-  ["~","~","~","~","A","A","A","A","C","A","A","A","~","~","D","D","D","D","~","~"],
-  ["~","~","~","A","A","C","A","A","A","A","A","A","~","D","D","D","~","~","~","~"],
+  ["~","~","~","~","A","A","A","A","K","A","A","A","~","~","D","D","D","D","~","~"],
+  ["~","~","~","A","A","K","A","A","A","A","A","A","~","D","D","D","~","~","~","~"],
   ["~","~","~","B","B","B","A","A","A","A","A","~","D","D","~","~","~","~","~","~"],
   ["~","~","B","B","B","B","B","A","A","A","~","~","~","~","~","~","~","~","~","~"],
   ["~","B","B","B","~","~","~","~","~","~","~","~","~","~","~","~","~","~","~","~"],
   ["B","B","~","~","~","~","~","~","~","E","E","E","~","~","~","~","~","~","~","~"],
-  ["B","~","~","~","~","~","~","E","E","C","E","E","E","~","~","~","~","~","~","~"],
+  ["B","~","~","~","~","~","~","E","E","K","E","E","E","~","~","~","~","~","~","~"],
   ["~","~","~","~","~","E","E","E","E","E","E","E","~","~","~","~","~","~","~","~"],
   ["~","~","~","~","E","E","E","~","~","~","~","~","~","~","~","~","~","~","~","~"],
   ["~","~","~","~","~","~","~","~","~","~","~","~","~","~","~","~","~","~","~","~"],
@@ -26,7 +25,7 @@ const tileClasses = {
   "~": "water",
   "A": "land-A",
   "B": "land-B",
-  "C": "capital",
+  "K": "capital",
   "D": "land-D",
   "E": "land-E"
 };
@@ -38,6 +37,11 @@ function drawMap() {
   board.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
 
   for (let r = 0; r < rows; r++) {
+    if (mapLayout[r].length !== cols) {
+      console.error(`Row ${r} is not ${cols} tiles wide`);
+      continue;
+    }
+
     for (let c = 0; c < cols; c++) {
       const type = mapLayout[r][c];
       const tile = document.createElement("div");
@@ -48,6 +52,5 @@ function drawMap() {
 }
 
 document.getElementById("end-turn").addEventListener("click", () => {
-  alert("Turn ended — ready for your next move!");
+  alert("Turn ended — now it’s someone else’s move!");
 });
-
