@@ -2,53 +2,15 @@ body {
   font-family: sans-serif;
   background-color: #f0f0f0;
   text-align: center;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
 }
 
-#game-board {
-  display: grid;
-  justify-content: center;
-  grid-gap: 2px;
-  margin-bottom: 20px;
+#home-screen, #tutorial-screen, #game-screen {
+  padding: 40px 20px;
 }
 
-.tile {
-  width: 30px;
-  height: 30px;
-  background-color: #ccc;
-  border: 1px solid #999;
-}
-
-.water { background-color: #87ceeb; }
-.land-A1 { background-color: #4caf50; }
-.land-A2 { background-color: #ff9800; }
-.land-A3 { background-color: #f44336; }
-.capital  { background-color: #9c27b0; }
-
-.tile:hover {
-  outline: 2px solid black;
-  cursor: pointer;
-}
-
-#home-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 90vh;
-}
-
-#home-screen h1 {
-  font-size: 3em;
-  margin-bottom: 0.2em;
-}
-
-#home-screen p {
-  font-size: 1.2em;
-  margin-bottom: 1em;
-}
-
-#start-button {
+button {
   padding: 10px 20px;
   font-size: 1em;
   background-color: #4caf50;
@@ -59,7 +21,7 @@ body {
   transition: 0.3s;
 }
 
-#start-button:hover {
+button:hover {
   background-color: #388e3c;
 }
 
@@ -69,45 +31,37 @@ footer {
   color: #888;
 }
 
-#tutorial-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #111;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 1000;
-}
-
 .tutorial-slide {
+  display: none;
   max-width: 500px;
-  text-align: center;
-  opacity: 0;
-  transition: opacity 1s ease;
-  position: absolute;
+  margin: auto;
 }
 
 .tutorial-slide.active {
-  opacity: 1;
-  position: relative;
+  display: block;
+  animation: fadeIn 1s ease;
 }
 
-#begin-game {
-  margin-top: 1em;
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1em;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-#begin-game:hover {
-  background-color: #388e3c;
+#game-board {
+  display: grid;
+  justify-content: center;
+  grid-gap: 2px;
+  margin-top: 20px;
 }
+
+.tile {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #999;
+}
+
+.water { background-color: #87ceeb; }
+.land-A1 { background-color: #4caf50; }
+.land-A2 { background-color: #ff9800; }
+.land-A3 { background-color: #f44336; }
+.capital  { background-color: #9c27b0; }
