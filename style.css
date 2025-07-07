@@ -44,10 +44,9 @@ footer {
   border: 1px solid #999;
 }
 
-/* Land Types */
-.land-A { background-color: #4caf50; }   /* Green */
-.land-B { background-color: #2196f3; }   /* Blue */
-.land-D { background-color: #ff9800; }   /* Orange */
-.land-E { background-color: #9c27b0; }   /* Purple */
-.capital { background-color: #f44336; }  /* Red */
-.water   { background-color: #87ceeb; }  /* Light Blue */
+.land-A { background-color: #4caf50; }
+.land-B { background-color: #2196f3; }
+.land-D { background-color: #ff9800; }
+.land-E { background-color: #9c27b0; }
+.capital { background-color: #f44336; }
+.water   { background-color: #87ceeb; }
