@@ -40,3 +40,23 @@ function drawMap() {
 }
 
 drawMap();
+const slides = document.querySelectorAll(".tutorial-slide");
+let currentSlide = 0;
+
+function showSlide(index) {
+  slides.forEach((slide, i) => {
+    slide.classList.toggle("active", i === index);
+  });
+
+  if (index < slides.length - 1) {
+    setTimeout(() => showSlide(index + 1), 4000); // 4 seconds per slide
+  }
+}
+
+showSlide(0);
+
+document.getElementById("begin-game").addEventListener("click", () => {
+  document.getElementById("tutorial-screen").style.display = "none";
+  document.getElementById("game-screen").style.display = "block";
+});
+
