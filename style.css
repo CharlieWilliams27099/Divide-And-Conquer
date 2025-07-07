@@ -1,0 +1,31 @@
+body {
+  font-family: sans-serif;
+  background-color: #f0f0f0;
+  text-align: center;
+  padding: 20px;
+}
+
+#game-board {
+  display: grid;
+  justify-content: center;
+  grid-gap: 2px;
+  margin-bottom: 20px;
+}
+
+.tile {
+  width: 30px;
+  height: 30px;
+  background-color: #ccc;
+  border: 1px solid #999;
+}
+
+.water { background-color: #87ceeb; }
+.land-A1 { background-color: #4caf50; }
+.land-A2 { background-color: #ff9800; }
+.land-A3 { background-color: #f44336; }
+.capital  { background-color: #9c27b0; }
+
+.tile:hover {
+  outline: 2px solid black;
+  cursor: pointer;
+}
