@@ -68,3 +68,46 @@ footer {
   font-size: 0.9em;
   color: #888;
 }
+
+#tutorial-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #111;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.tutorial-slide {
+  max-width: 500px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1s ease;
+  position: absolute;
+}
+
+.tutorial-slide.active {
+  opacity: 1;
+  position: relative;
+}
+
+#begin-game {
+  margin-top: 1em;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+#begin-game:hover {
+  background-color: #388e3c;
+}
