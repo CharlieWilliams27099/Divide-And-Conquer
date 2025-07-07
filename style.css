@@ -1,51 +1,53 @@
-// === Start Button Logic ===
-document.getElementById("start-button").addEventListener("click", () => {
-  document.getElementById("home-screen").style.display = "none";
-  document.getElementById("game-screen").style.display = "block";
-  drawMap();
-});
-
-// === Map Setup ===
-const board = document.getElementById("game-board");
-
-const mapLayout = [
-  ["~", "~", "~", "~", "A", "A", "A", "~", "~", "~", "~", "~", "~"],
-  ["~", "~", "~", "A", "A", "C", "A", "A", "~", "~", "~", "~", "~"],
-  ["~", "~", "B", "B", "A", "A", "A", "A", "C", "~", "~", "~", "~"],
-  ["~", "B", "B", "B", "~", "~", "D", "D", "D", "D", "~", "~", "~"],
-  ["B", "B", "B", "~", "~", "~", "~", "D", "D", "D", "~", "~", "~"],
-  ["~", "~", "~", "~", "~", "~", "~", "~", "D", "D", "~", "~", "~"],
-  ["~", "~", "~", "~", "~", "E", "E", "E", "~", "~", "~", "~", "~"],
-  ["~", "~", "~", "~", "E", "E", "C", "E", "~", "~", "~", "~", "~"],
-  ["~", "~", "~", "E", "E", "E", "E", "~", "~", "~", "~", "~", "~"]
-];
-
-const tileClasses = {
-  "~": "water",
-  "A": "land-A",
-  "B": "land-B",
-  "C": "capital",
-  "D": "land-D",
-  "E": "land-E"
-};
-
-function drawMap() {
-  const rows = mapLayout.length;
-  const cols = mapLayout[0].length;
-  board.innerHTML = "";
-  board.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
-
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const type = mapLayout[r][c];
-      const tile = document.createElement("div");
-      tile.classList.add("tile", tileClasses[type] || "unknown");
-      board.appendChild(tile);
-    }
-  }
+body {
+  font-family: sans-serif;
+  background-color: #f0f0f0;
+  text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
-// === Optional: End Turn Button ===
-document.getElementById("end-turn").addEventListener("click", () => {
-  alert("Turn ended — game logic coming soon!");
-});
+#home-screen, #game-screen {
+  padding: 40px 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #388e3c;
+}
+
+footer {
+  margin-top: 30px;
+  font-size: 0.9em;
+  color: #888;
+}
+
+#game-board {
+  display: grid;
+  justify-content: center;
+  grid-gap: 2px;
+  margin-top: 20px;
+}
+
+.tile {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #999;
+}
+
+/* Land Types */
+.land-A { background-color: #4caf50; }   /* Green */
+.land-B { background-color: #2196f3; }   /* Blue */
+.land-D { background-color: #ff9800; }   /* Orange */
+.land-E { background-color: #9c27b0; }   /* Purple */
+.capital { background-color: #f44336; }  /* Red */
+.water   { background-color: #87ceeb; }  /* Light Blue */
