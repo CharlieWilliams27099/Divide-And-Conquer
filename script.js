@@ -1,8 +1,34 @@
-document.getElementById("start-button").addEventListener("click", () => {
+// === Tutorial Logic ===
+const startBtn = document.getElementById("start-button");
+const tutorialScreen = document.getElementById("tutorial-screen");
+const slides = document.querySelectorAll(".tutorial-slide");
+const beginBtn = document.getElementById("begin-game");
+
+let slideIndex = 0;
+
+startBtn.addEventListener("click", () => {
   document.getElementById("home-screen").style.display = "none";
-  document.getElementById("game-screen").style.display = "block";
+  tutorialScreen.style.display = "block";
+  showSlide(slideIndex);
 });
 
+function showSlide(index) {
+  slides.forEach((slide, i) => {
+    slide.classList.toggle("active", i === index);
+  });
+
+  if (index < slides.length - 1) {
+    setTimeout(() => showSlide(index + 1), 4000);
+  }
+}
+
+beginBtn.addEventListener("click", () => {
+  tutorialScreen.style.display = "none";
+  document.getElementById("game-screen").style.display = "block";
+  drawMap(); // Start the game!
+});
+
+// === Map Logic ===
 const board = document.getElementById("game-board");
 
 
@@ -14,24 +40,25 @@ const mapLayout = [
   ["~", "~", "~", "~", "~", "~", "~", "~", "~", "~"]
 ];
 
-const rows = mapLayout.length;
-const cols = mapLayout[0].length;
-
 function drawMap() {
+  const rows = mapLayout.length;
+  const cols = mapLayout[0].length;
   board.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
+
+  board.innerHTML = "";
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      const cellType = mapLayout[r][c];
+      const type = mapLayout[r][c];
       const tile = document.createElement("div");
       tile.classList.add("tile");
 
-      if (cellType === "~") {
+      if (type === "~") {
         tile.classList.add("water");
-      } else if (cellType === "C") {
+      } else if (type === "C") {
         tile.classList.add("capital");
       } else {
-        tile.classList.add(`land-${cellType}`);
+        tile.classList.add(`land-${type}`);
       }
 
       board.appendChild(tile);
@@ -39,24 +66,9 @@ function drawMap() {
   }
 }
 
-drawMap();
-const slides = document.querySelectorAll(".tutorial-slide");
-let currentSlide = 0;
-
-function showSlide(index) {
-  slides.forEach((slide, i) => {
-    slide.classList.toggle("active", i === index);
-  });
-
-  if (index < slides.length - 1) {
-    setTimeout(() => showSlide(index + 1), 4000); // 4 seconds per slide
-  }
-}
-
-showSlide(0);
-
-document.getElementById("begin-game").addEventListener("click", () => {
-  document.getElementById("tutorial-screen").style.display = "none";
-  document.getElementById("game-screen").style.display = "block";
+// Optional: End Turn logic
+document.getElementById("end-turn").addEventListener("click", () => {
+  alert("Turn ended! (Next: Add game logic)");
 });
+
 
