@@ -9,18 +9,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const setupScreen = document.getElementById("setup-screen");
   const gameUI = document.getElementById("game-ui");
 
-  const rows = 10;
-  const cols = 10;
-  const totalTiles = rows * cols;
-  let tiles = [];
-  let control = { 1: "human", 2: "ai" };
-  let currentPlayer = 1;
+  const cols = 10, rows = 10, total = rows * cols;
+  let tiles = [], control = {1: "ai", 2: "ai"};
+  let currentPlayer = 1, phase = "capital", capitalCount = 0;
+  let selectedTile = null, fortifySource = null, hasFortified = false;
   let troopsToPlace = 3;
-  let phase = "capital";
-  let capitalCount = 0;
-  let selectedTile = null;
-  let fortifySource = null;
-  let hasFortified = false;
 
   startGameBtn.addEventListener("click", () => {
     control[1] = player1Type.value;
@@ -33,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function initGame() {
     board.innerHTML = "";
     tiles = [];
-    for (let i = 0; i < totalTiles; i++) {
+    for (let i = 0; i < total; i++) {
       const tile = document.createElement("div");
       tile.className = "tile";
       tile.dataset.index = i;
@@ -46,92 +39,72 @@ document.addEventListener("DOMContentLoaded", () => {
     updateUI();
   }
 
+  function updateUI() {
+    tiles.forEach(tile => {
+      const owner = tile.dataset.owner;
+      tile.className = "tile";
+      if (owner === "1") tile.classList.add("p1");
+      if (owner === "2") tile.classList.add("p2");
+      if (tile.classList.contains("capital")) tile.classList.add("capital");
+      tile.textContent = tile.dataset.troops;
+      tile.style.outline = "none";
+    });
+    endTurn.disabled = phase === "capital" || (phase === "reinforce" && troopsToPlace > 0);
+    fortifyBtn.style.display = (phase === "attack" && !hasFortified && control[currentPlayer] === "human")
+      ? "inline-block" : "none";
+    if (control[currentPlayer] === "ai") setTimeout(aiTurn, 400);
+  }
+
   function handleClick(tile) {
     if (control[currentPlayer] !== "human") return;
     const owner = parseInt(tile.dataset.owner);
     const troops = parseInt(tile.dataset.troops);
-    const index = parseInt(tile.dataset.index);
-
     if (phase === "capital" && owner === 0) {
-      tile.dataset.owner = currentPlayer;
-      tile.dataset.troops = "5";
-      tile.classList.add(`p${currentPlayer}`, "capital");
-      capitalCount++;
-      if (capitalCount === 2) {
-        phase = "reinforce";
-        troopsToPlace = 3;
-        currentPlayer = 1;
-        status.textContent = "Player 1 (🔴), place your 3 troops.";
-        updateUI();
-        if (control[1] === "ai") setTimeout(aiTurn, 500);
-      } else {
-        currentPlayer = 2;
-        status.textContent = "Player 2 (🔵), select your capital.";
-      }
-      updateUI();
-    }
-
-    if (phase === "reinforce" && owner === currentPlayer && troopsToPlace > 0) {
+      claimCapital(tile);
+    } else if (phase === "reinforce" && owner === currentPlayer && troopsToPlace > 0) {
       tile.dataset.troops = (troops + 1).toString();
       troopsToPlace--;
       if (troopsToPlace === 0) {
         phase = "attack";
-        status.textContent = `Player ${currentPlayer === 1 ? "🔴" : "🔵"}: Attack or Fortify.`;
         updateUI();
-        if (control[currentPlayer] === "ai") setTimeout(aiTurn, 500);
       }
-    }
-
-    if (phase === "attack") {
+    } else if (phase === "attack") {
       if (!selectedTile && owner === currentPlayer && troops > 1) {
         selectedTile = tile;
         tile.style.outline = "2px solid yellow";
       } else if (selectedTile && tile !== selectedTile) {
-        const atk = parseInt(selectedTile.dataset.troops);
-        const def = parseInt(tile.dataset.troops);
-        const targetOwner = parseInt(tile.dataset.owner);
-        const fromIdx = parseInt(selectedTile.dataset.index);
-        const toIdx = parseInt(tile.dataset.index);
-
-        if (isAdjacent(fromIdx, toIdx)) {
-          if (targetOwner === 0 && atk > 1) {
-            selectedTile.dataset.troops = (atk - 1).toString();
-            tile.dataset.owner = currentPlayer;
-            tile.dataset.troops = "1";
-            tile.className = `tile p${currentPlayer}`;
-          } else if (targetOwner !== currentPlayer && atk > def) {
-            tile.dataset.owner = currentPlayer;
-            tile.dataset.troops = (atk - 1).toString();
-            selectedTile.dataset.troops = "1";
-            tile.className = `tile p${currentPlayer}`;
-          }
-        }
-
+        attemptAttack(selectedTile, tile);
         selectedTile.style.outline = "none";
         selectedTile = null;
-        checkVictory();
-        updateUI();
       }
-    }
-
-    if (phase === "fortify") {
+    } else if (phase === "fortify") {
       if (!fortifySource && owner === currentPlayer && troops > 1) {
         fortifySource = tile;
         tile.style.outline = "2px solid lime";
       } else if (fortifySource && tile !== fortifySource && owner === currentPlayer) {
-        const fromIdx = parseInt(fortifySource.dataset.index);
-        const toIdx = parseInt(tile.dataset.index);
-        if (isAdjacent(fromIdx, toIdx)) {
-          fortifySource.dataset.troops = (parseInt(fortifySource.dataset.troops) - 1).toString();
-          tile.dataset.troops = (parseInt(tile.dataset.troops) + 1).toString();
-          phase = "end";
-          status.textContent = "Fortify complete. Press End Turn.";
-        }
+        attemptFortify(fortifySource, tile);
         fortifySource.style.outline = "none";
         fortifySource = null;
-        updateUI();
       }
     }
+    updateUI();
+  }
+
+  function claimCapital(tile) {
+    tile.dataset.owner = currentPlayer;
+    tile.dataset.troops = "5";
+    tile.classList.add(`p${currentPlayer}`, "capital");
+    capitalCount++;
+    if (capitalCount === 2) {
+      phase = "reinforce";
+      troopsToPlace = 3;
+      currentPlayer = 1;
+      status.textContent = "Player 1 (🔴), place your 3 troops.";
+    } else {
+      currentPlayer = 2;
+      status.textContent = "Player 2 (🔵), select your capital.";
+    }
+    updateUI();
   }
 
   function isAdjacent(i1, i2) {
@@ -140,82 +113,68 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
   }
 
+  function attemptAttack(from, to) {
+    const i1 = parseInt(from.dataset.index);
+    const i2 = parseInt(to.dataset.index);
+    const atk = parseInt(from.dataset.troops);
+    const def = parseInt(to.dataset.troops);
+    const defOwner = parseInt(to.dataset.owner);
+    if (!isAdjacent(i1, i2)) return;
+    if (defOwner === 0 && atk > 1) {
+      from.dataset.troops = (atk - 1).toString();
+      to.dataset.owner = currentPlayer;
+      to.dataset.troops = "1";
+    } else if (defOwner !== currentPlayer && atk > def) {
+      from.dataset.troops = (atk - def).toString();
+      to.dataset.owner = currentPlayer;
+      to.dataset.troops = "1";
+    }
+  }
+
+  function attemptFortify(from, to) {
+    const troops = parseInt(from.dataset.troops);
+    if (troops > 1) {
+      from.dataset.troops = (troops - 1).toString();
+      to.dataset.troops = (parseInt(to.dataset.troops) + 1).toString();
+      hasFortified = true;
+      phase = "attack";
+      updateUI();
+    }
+  }
+
   endTurn.addEventListener("click", () => {
-    currentPlayer = currentPlayer === 1 ? 2 : 1;
-    troopsToPlace = 3;
+    if (phase === "attack") {
+      phase = "fortify";
+    } else if (phase === "fortify" || control[currentPlayer] === "ai") {
+      currentPlayer = 3 - currentPlayer;
+      phase = "reinforce";
+      troopsToPlace = 3;
+    }
     hasFortified = false;
-    fortifySource = null;
     selectedTile = null;
-    phase = "reinforce";
-    status.textContent = `Player ${currentPlayer === 1 ? "🔴" : "🔵"}: place 3 troops.`;
+    fortifySource = null;
+    status.textContent = `Player ${currentPlayer} (${currentPlayer === 1 ? "🔴" : "🔵"}), place your 3 troops.`;
     updateUI();
-    if (control[currentPlayer] === "ai") setTimeout(aiTurn, 500);
   });
 
   fortifyBtn.addEventListener("click", () => {
-    if (phase === "attack") {
-      phase = "fortify";
-      status.textContent = `Player ${currentPlayer === 1 ? "🔴" : "🔵"}: select tile to fortify from.`;
-      updateUI();
-    }
+    phase = "fortify";
+    updateUI();
   });
 
-  function checkVictory() {
-    const p1 = tiles.filter(t => t.dataset.owner === "1").length;
-    const p2 = tiles.filter(t => t.dataset.owner === "2").length;
-    if (p1 === 0) {
-      status.textContent = "🔵 Player 2 wins!";
-      disableGame();
-    } else if (p2 === 0) {
-      status.textContent = "🔴 Player 1 wins!";
-      disableGame();
-    }
-  }
-
-  function disableGame() {
-    tiles.forEach(t => t.style.pointerEvents = "none");
-    endTurn.disabled = true;
-    fortifyBtn.disabled = true;
-  }
-
   function aiTurn() {
-    if (phase === "capital") {
-      const neutral = tiles.filter(t => t.dataset.owner === "0");
-      const tile = neutral[Math.floor(Math.random() * neutral.length)];
-      tile.click();
-      return;
-    }
-
+    const owned = tiles.filter(t => parseInt(t.dataset.owner) === currentPlayer);
     if (phase === "reinforce") {
-      const ownTiles = tiles.filter(t => t.dataset.owner === currentPlayer.toString());
-      const borderTiles = ownTiles.filter(t => {
-        const i = parseInt(t.dataset.index);
-        return tiles.some(n =>
-          isAdjacent(i, parseInt(n.dataset.index)) &&
-          n.dataset.owner !== t.dataset.owner
-        );
-      });
-      const reinforceTile = borderTiles[0] || ownTiles[0];
-      for (let i = 0; i < 3; i++) {
-        reinforceTile.dataset.troops = (parseInt(reinforceTile.dataset.troops) + 1).toString();
+      for (let i = 0; i < troopsToPlace; i++) {
+        const tile = owned[Math.floor(Math.random() * owned.length)];
+        tile.dataset.troops = (parseInt(tile.dataset.troops) + 1).toString();
       }
       troopsToPlace = 0;
       phase = "attack";
       updateUI();
-      setTimeout(aiTurn, 300);
-      return;
+    } else if (phase === "attack") {
+      // Skip AI attack logic for now; could add later
+      endTurn.click();
     }
-
-    if (phase === "attack") {
-      const attackers = tiles.filter(t =>
-        t.dataset.owner === currentPlayer.toString() &&
-        parseInt(t.dataset.troops) > 1
-      );
-      for (let a of attackers) {
-        const i = parseInt(a.dataset.index);
-        const neighbors = tiles.filter(n =>
-          isAdjacent(i, parseInt(n.dataset.index)) &&
-          n.dataset.owner !== a.dataset.owner
-        );
-        for (let t of neighbors) {
-          const atk = parseInt(a
+  }
+});
