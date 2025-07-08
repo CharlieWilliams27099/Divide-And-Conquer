@@ -15,6 +15,7 @@
     #board {
       display: grid;
       grid-template-columns: repeat(10, 40px);
+      grid-template-rows: repeat(10, 40px);
       gap: 2px;
       justify-content: center;
       margin: 20px auto;
@@ -32,21 +33,19 @@
       align-items: center;
       cursor: pointer;
       user-select: none;
-      transition: outline 0.15s ease;
     }
     .p1 { background-color: crimson; color: white; }
     .p2 { background-color: dodgerblue; color: white; }
     .capital { border: 2px solid gold; }
     button {
       padding: 10px 20px;
-      margin: 8px;
+      margin: 10px 5px;
       font-size: 1em;
       background-color: #4caf50;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.2s ease;
     }
     button:hover {
       background-color: #388e3c;
@@ -54,14 +53,13 @@
     select {
       font-size: 1em;
       padding: 5px;
-      margin: 5px;
-      background-color: #444;
+      background: #333;
       color: white;
-      border: none;
       border-radius: 4px;
+      border: none;
     }
     #setup-screen {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
     #fortify {
       display: none;
@@ -69,7 +67,6 @@
   </style>
 </head>
 <body>
-
   <h1>🧠 Divide and Conquer</h1>
 
   <div id="setup-screen">
@@ -112,11 +109,11 @@
       const setupScreen = document.getElementById("setup-screen");
       const gameUI = document.getElementById("game-ui");
 
-      const rows = 10, cols = 10, totalTiles = rows * cols;
-      let tiles = [], control = {1: "human", 2: "ai"};
-      let currentPlayer = 1, troopsToPlace = 3;
-      let phase = "capital", capitalCount = 0;
+      const cols = 10, rows = 10, total = rows * cols;
+      let tiles = [], control = {1: "ai", 2: "ai"};
+      let currentPlayer = 1, phase = "capital", capitalCount = 0;
       let selectedTile = null, fortifySource = null, hasFortified = false;
+      let troopsToPlace = 3;
 
       startGameBtn.addEventListener("click", () => {
         control[1] = player1Type.value;
@@ -129,7 +126,7 @@
       function initGame() {
         board.innerHTML = "";
         tiles = [];
-        for (let i = 0; i < totalTiles; i++) {
+        for (let i = 0; i < total; i++) {
           const tile = document.createElement("div");
           tile.className = "tile";
           tile.dataset.index = i;
@@ -140,23 +137,21 @@
           board.appendChild(tile);
         }
         updateUI();
-        if (control[currentPlayer] === "ai") setTimeout(aiTurn, 300);
       }
 
       function updateUI() {
         tiles.forEach(tile => {
-          tile.className = "tile";
           const owner = tile.dataset.owner;
+          tile.className = "tile";
           if (owner === "1") tile.classList.add("p1");
           if (owner === "2") tile.classList.add("p2");
           if (tile.classList.contains("capital")) tile.classList.add("capital");
           tile.textContent = tile.dataset.troops;
           tile.style.outline = "none";
         });
-
         endTurn.disabled = phase === "capital" || (phase === "reinforce" && troopsToPlace > 0);
-        fortifyBtn.style.display = (phase === "attack" && !hasFortified && control[currentPlayer] === "human") ? "inline-block" : "none";
-
+        fortifyBtn.style.display = (phase === "attack" && !hasFortified && control[currentPlayer] === "human")
+          ? "inline-block" : "none";
         if (control[currentPlayer] === "ai") setTimeout(aiTurn, 400);
       }
 
@@ -164,8 +159,7 @@
         if (control[currentPlayer] !== "human") return;
         const owner = parseInt(tile.dataset.owner);
         const troops = parseInt(tile.dataset.troops);
-        const idx = parseInt(tile.dataset.index);
-
+        const index = parseInt(tile.dataset.index);
         if (phase === "capital" && owner === 0) {
           claimCapital(tile);
         } else if (phase === "reinforce" && owner === currentPlayer && troopsToPlace > 0) {
@@ -207,12 +201,11 @@
           troopsToPlace = 3;
           currentPlayer = 1;
           status.textContent = "Player 1 (🔴), place your 3 troops.";
-          updateUI();
-          if (control[currentPlayer] === "ai") setTimeout(aiTurn, 300);
         } else {
           currentPlayer = 2;
           status.textContent = "Player 2 (🔵), select your capital.";
         }
+        updateUI();
       }
 
       function isAdjacent(i1, i2) {
@@ -228,8 +221,9 @@
         const def = parseInt(to.dataset.troops);
         const defOwner = parseInt(to.dataset.owner);
         if (!isAdjacent(i1, i2)) return;
-
         if (defOwner === 0 && atk > 1) {
           from.dataset.troops = (atk - 1).toString();
           to.dataset.owner = currentPlayer;
-          to.dataset.t
+          to.dataset.troops = "1";
+        } else if (defOwner !== currentPlayer && atk > def) {
+          from.dataset.tro
