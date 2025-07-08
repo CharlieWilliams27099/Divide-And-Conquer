@@ -226,4 +226,6 @@
           to.dataset.owner = currentPlayer;
           to.dataset.troops = "1";
         } else if (defOwner !== currentPlayer && atk > def) {
-          from.dataset.tro
+          from.dataset.troops = (atk - def).toString();
+          to.dataset.owner = currentPlayer;
+          to.dataset.troops = "1
