@@ -2,16 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Territory Conquest</title>
+  <title>Divide and Conquer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🗺️ Territory Conquest</h1>
-  <p>Click a region to interact with it</p>
-  <canvas id="mapCanvas" width="800" height="500"></canvas>
-  <p id="status">Ready for battle.</p>
+
+  <h1>🧠 Divide and Conquer</h1>
+
+  <!-- Setup Screen -->
+  <div id="setup-screen">
+    <h2>Select Player Types</h2>
+    <label>
+      Player 1 (🔴):
+      <select id="player1-type">
+        <option value="human">Human</option>
+        <option value="ai">AI</option>
+      </select>
+    </label>
+    <br/><br/>
+    <label>
+      Player 2 (🔵):
+      <select id="player2-type">
+        <option value="human">Human</option>
+        <option value="ai">AI</option>
+      </select>
+    </label>
+    <br/><br/>
+    <button id="start-game">Start Game</button>
+  </div>
+
+  <!-- Game UI -->
+  <div id="game-ui" style="display: none;">
+    <p id="status">Status will appear here</p>
+    <div id="board"></div>
+    <button id="fortify">Fortify</button>
+    <button id="end-turn">End Turn</button>
+  </div>
+
+  <!-- Game Script -->
   <script src="script.js"></script>
 </body>
 </html>
-
